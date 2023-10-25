@@ -1,4 +1,6 @@
-﻿namespace Code2.PubSub
+﻿using System;
+
+namespace Code2.PubSub
 {
 	public interface IMessageBus
 	{
