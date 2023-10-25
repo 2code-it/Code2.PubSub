@@ -11,7 +11,7 @@
 		<PackageTags>pubsub messagebus messaging</PackageTags>
 		<RepositoryUrl>https://github.com/2code-it/Code2.PubSub.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Description>Publish/Subscribe messaging services</Description>
+		<Description>Publish, subscribe messaging services</Description>
 		<PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
 	</PropertyGroup>
 
