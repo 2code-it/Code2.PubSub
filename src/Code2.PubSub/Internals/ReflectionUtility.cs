@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+
 
 namespace Code2.PubSub.Internals
 {
@@ -20,6 +23,12 @@ namespace Code2.PubSub.Internals
 			utility.MessageBusSubscribeObjectMethod(messageBus, channel, instance, methodInfo);
 		}
 
+		public Delegate GetMessageBusPublishAction(Type messageType, bool addChannelArg, IMessageBus messageBus) 
+		{
+			var utility = GetMessageBusMappingUtility(messageType);
+			return utility.GetMessageBusPublishAction(messageBus, addChannelArg);
+		}
+
 		private IMessageBusMappingUtility GetMessageBusMappingUtility(Type type)
 		{
 			Type utilType = typeof(MessageBusMappingUtility<>).MakeGenericType(type);
@@ -29,11 +38,29 @@ namespace Code2.PubSub.Internals
 		private interface IMessageBusMappingUtility
 		{
 			Delegate GetMessageBusPublishEventHandler(IMessageBus messageBus, int channel);
+			Delegate GetMessageBusPublishAction(IMessageBus messageBus, bool addChannelArg);
 			void MessageBusSubscribeObjectMethod(IMessageBus messageBus, int channel, object instance, MethodInfo methodInfo);
+			
 		}
 
 		private class MessageBusMappingUtility<T> : IMessageBusMappingUtility where T : class
 		{
+
+			public Delegate GetMessageBusPublishAction(IMessageBus messageBus, bool addChannelArg)
+			{
+				if(addChannelArg)
+				{
+					return new Action<T, int>((message, channel) =>
+					{
+						messageBus.Publish(message, channel);
+					});
+				}
+				return new Action<T>((message) =>
+				{
+					messageBus.Publish(message);
+				});
+			}
+
 			public Delegate GetMessageBusPublishEventHandler(IMessageBus messageBus, int channel)
 			{
 				EventHandler<T> handler = (sender, args) =>
